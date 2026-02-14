@@ -252,6 +252,67 @@
       padding: 40px;
       color: #ff00ff;
     }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: #0f0f1a;
+      border: 2px solid #ff00ff;
+      padding: 30px;
+      max-width: 400px;
+      box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+    }
+
+    .modal h2 {
+      color: #ff00ff;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-size: 18px;
+    }
+
+    .shortcut-list {
+      list-style: none;
+    }
+
+    .shortcut-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #00ffff33;
+    }
+
+    .shortcut-key {
+      background: #00ffff;
+      color: #0a0a0f;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .shortcut-action {
+      color: #00ffff;
+    }
+
+    .modal-close {
+      margin-top: 20px;
+      width: 100%;
+    }
   </style>
 </head>
 
@@ -303,6 +364,12 @@
         <option value="name">Name A-Z</option>
       </select>
       <button class="btn btn-small btn-cyan" id="applyFilters">Apply</button>
+      <button class="btn" id="helpBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" />
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -348,6 +415,39 @@
     <div class="time" id="timeDisplay">0:00 / 0:00</div>
   </div>
 
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal">
+      <h2>Keyboard Shortcuts</h2>
+      <ul class="shortcut-list">
+        <li>
+          <span class="shortcut-key">Space</span>
+          <span class="shortcut-action">Play / Pause</span>
+        </li>
+        <li>
+          <span class="shortcut-key">→</span>
+          <span class="shortcut-action">Next track</span>
+        </li>
+        <li>
+          <span class="shortcut-key">←</span>
+          <span class="shortcut-action">Previous track</span>
+        </li>
+        <li>
+          <span class="shortcut-key">↑</span>
+          <span class="shortcut-action">Volume up</span>
+        </li>
+        <li>
+          <span class="shortcut-key">↓</span>
+          <span class="shortcut-action">Volume down</span>
+        </li>
+        <li>
+          <span class="shortcut-key">M</span>
+          <span class="shortcut-action">Mute / Unmute</span>
+        </li>
+      </ul>
+      <button class="btn modal-close" id="closeHelp">Close</button>
+    </div>
+  </div>
+
   <audio id="audioPlayer"></audio>
 
   <script>
@@ -376,6 +476,26 @@
     let currentIndex = -1;
     let isPlaying = false;
     let shuffleMode = false;
+
+
+    // Help modal
+    const helpBtn = document.getElementById('helpBtn');
+    const helpModal = document.getElementById('helpModal');
+    const closeHelp = document.getElementById('closeHelp');
+
+    helpBtn.addEventListener('click', () => {
+      helpModal.classList.add('active');
+    });
+
+    closeHelp.addEventListener('click', () => {
+      helpModal.classList.remove('active');
+    });
+
+    helpModal.addEventListener('click', (e) => {
+      if (e.target === helpModal) {
+        helpModal.classList.remove('active');
+      }
+    });
 
     // Search tracks
     // Search tracks
@@ -551,6 +671,39 @@
     nextBtn.addEventListener('click', nextTrack);
     prevBtn.addEventListener('click', prevTrack);
     shuffleBtn.addEventListener('click', toggleShuffle);
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Ignore if typing in search input
+      if (e.target.id === 'searchInput') return;
+
+      switch (e.code) {
+        case 'Space':
+          e.preventDefault();
+          togglePlayPause();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          nextTrack();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          prevTrack();
+          break;
+        case 'KeyM':
+          e.preventDefault();
+          audio.muted = !audio.muted;
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          audio.volume = Math.min(1, audio.volume + 0.1);
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          audio.volume = Math.max(0, audio.volume - 0.1);
+          break;
+      }
+    });
 
     // Load popular music on start
     searchTracks();
