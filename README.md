@@ -19,7 +19,7 @@ A lightweight, neon-styled desktop music player built with **Tauri** and **Rust*
 
 | Main Player |
 |-------------|
-| ![Main](screenshots/main.png) |
+| ![Main](screenshots/main.png)  |
 
 ## Tech Stack
 
@@ -49,21 +49,19 @@ cd sedna-player
 npm install
 ```
 
-### 3. Configure API Key
+### 3. Configure environment variables
 
-Copy the example config file:
+Copy the example environment file:
 
 ```bash
-cp src/config.example.js src/config.js
+cp .env.example .env
 ```
 
-Edit `src/config.js` and add your Jamendo Client ID:
+Edit `.env` and add your Jamendo Client ID:
 
-```javascript
-const CONFIG = {
-  CLIENT_ID: 'your_jamendo_client_id_here',
-  API_BASE: 'https://api.jamendo.com/v3.0'
-};
+```env
+JAMENDO_CLIENT_ID=your_jamendo_client_id_here
+JAMENDO_API_BASE=https://api.jamendo.com/v3.0
 ```
 
 > Get your free API key at [devportal.jamendo.com](https://devportal.jamendo.com/)
@@ -96,19 +94,27 @@ src-tauri/target/release/bundle/macos/
 ```
 sedna-player/
 ├── src/
-│   ├── index.html      # Main UI
-│   ├── config.js       # API configuration (git ignored)
-│   └── config.example.js
+│   └── index.html          # Main UI
 ├── src-tauri/
 │   ├── src/
-│   │   └── main.rs     # Rust backend
-│   ├── icons/          # App icons
-│   ├── tauri.conf.json # Tauri configuration
+│   │   └── main.rs         # Rust backend
+│   ├── icons/              # App icons
+│   ├── tauri.conf.json     # Tauri configuration
 │   └── Cargo.toml
-├── build.sh            # Production build script
-├── dev.sh              # Development script
+├── .env.example            # Environment variables template
+├── build.sh                # Production build script
+├── dev.sh                  # Development script
 └── README.md
 ```
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `./dev.sh` | Run in development mode |
+| `./build.sh` | Build production app |
+
+> **Note:** Scripts automatically load variables from `.env` and inject them into the app.
 
 ## Music Source
 
